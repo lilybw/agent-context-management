@@ -1,4 +1,4 @@
-import { createSignal, Show } from 'solid-js'
+import { createEffect, createSignal, Show } from 'solid-js'
 import type { AgentConfig, Conversation } from '../agents/types'
 import {
   addMessage,
@@ -23,6 +23,12 @@ export default function Chat(props: ChatProps) {
   const [loading, setLoading] = createSignal(false)
   const [error, setError] = createSignal<string | null>(null)
   const [showDropZone, setShowDropZone] = createSignal(false)
+
+  // Keep conversation metadata in sync with config changes
+  createEffect(() => {
+    const { provider, model, systemPrompt } = props.config
+    setConversation((c) => ({ ...c, provider, model, systemPrompt }))
+  })
 
   async function sendMessage(content: string) {
     setError(null)
